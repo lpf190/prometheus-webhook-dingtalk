@@ -33,6 +33,30 @@ Flags:
       --version           Show application version.
 
 ```
+## 注意事项：
+> 提供了路由供` alertmanager` 的webhook_configs使用：
+
+- ` /dingtalk/<profile>/send`  ##此处的<profile>## 需要在` -ding.profile`中指定如：
+```
+prometheus-webhook-dingtalk \
+    --ding.profile="webhook1=https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxxxxxx" \
+    --ding.profile="webhook2=https://oapi.dingtalk.com/robot/send?access_token=yyyyyyyyyyy"
+```
+这里定义了两个webhook，一个` webhook1`,一个` webhook2`用来发送到不同钉钉机器人
+
+然后在alermanager的配置中，加入相应的receiver(注意url)：
+```
+receivers:
+- name: send_to_dingding_webhook1
+  webhook_configs:
+  - send_resolved: false
+    url: http://localhost:8060/dingtalk/webhook1/send
+- name: send_to_dingding_webhook2
+  webhook_configs:
+  - send_resolved: false
+    url: http://localhost:8060/dingtalk/webhook2/send
+```
+
 
 ## Using Docker
 
@@ -40,6 +64,7 @@ You can deploy this tool using the Docker image from following registry:
 
 * [DockerHub]\: [timonwong/prometheus-webhook-dingtalk](https://registry.hub.docker.com/u/timonwong/prometheus-webhook-dingtalk/)
 * [Quay.io]\: [timonwong/prometheus-webhook-dingtalk](https://quay.io/repository/timonwong/prometheus-webhook-dingtalk)
+
 
 [Prometheus]: https://prometheus.io
 [AlertManager]: https://github.com/prometheus/alertmanager
